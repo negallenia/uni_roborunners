@@ -21,3 +21,4 @@ task_trend.txt
 test*.json
 cmake-build-*/
 .codex
+PlanViz/.venv
