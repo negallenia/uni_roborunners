@@ -18,7 +18,12 @@ file(GLOB DEFAULT_PLANNER_SOURCES "default_planner/*.cpp")
 
 # Find Boost
 ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
-find_package( Boost 1.49.0 REQUIRED COMPONENTS program_options system filesystem log log_setup)
+find_package(Boost 1.49.0 REQUIRED)
+set(BOOST_COMPONENTS program_options filesystem log log_setup)
+if (Boost_VERSION VERSION_LESS 1.69.0)
+    list(APPEND BOOST_COMPONENTS system)
+endif()
+find_package(Boost 1.49.0 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 include_directories( ${Boost_INCLUDE_DIRS} )
 
 # pybind11 is a required dependency (needed for Python component support at runtime)
@@ -40,6 +45,7 @@ target_link_libraries(lifelong PRIVATE pybind11::embed ${Boost_LIBRARIES})
 if (COPY_PY_PATH_CONFIG)
     file(COPY "config.json" DESTINATION ${CMAKE_BINARY_DIR})
 endif()
+
 
 
 add_custom_target(clean_all
@@ -89,4 +95,3 @@ if(BUILD_TESTS)
     add_test(NAME python_interface_test COMMAND python_interface_test
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
-
